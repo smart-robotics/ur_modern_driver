@@ -48,6 +48,7 @@
 #include "ur_msgs/Digital.h"
 #include "ur_msgs/Analog.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Int64.h"
 #include <controller_manager/controller_manager.h>
 
 /// TF
@@ -582,6 +583,8 @@ private:
 				"wrench", 1);
         ros::Publisher io_pub_rt = nh_.advertise<ur_msgs::IOStates>(
                 "ur_driver/io_states_rt", 1);
+        ros::Publisher program_state_pub = nh_.advertise<std_msgs::Int64>(
+                "ur_driver/program_state", 1);
         ros::Publisher tool_vel_pub = nh_.advertise<geometry_msgs::TwistStamped>("tool_velocity", 1);
         static tf::TransformBroadcaster br;
 		while (ros::ok()) {
@@ -675,7 +678,15 @@ private:
                     io_msg_rt.digital_out_states.push_back(digi);
                     pin++;
                 }
-                io_pub_rt.publish(io_msg_rt);
+            }
+            io_pub_rt.publish(io_msg_rt);
+
+            // From version 3.2, realtime interface has programState
+            if (robot_.sec_interface_->robot_state_->getVersion() >= 3.2)
+            {
+                int program_state = (int)robot_.rt_interface_->robot_state_->getProgramState();
+
+                ROS_INFO("program_state: %d", program_state);
             }
 
 			robot_.rt_interface_->robot_state_->setDataPublished();
