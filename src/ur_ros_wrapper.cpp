@@ -686,7 +686,6 @@ private:
             {
                 int program_state = (int)robot_.rt_interface_->robot_state_->getProgramState();
 
-                ROS_INFO("program_state: %d", program_state);
             }
 
 			robot_.rt_interface_->robot_state_->setDataPublished();
