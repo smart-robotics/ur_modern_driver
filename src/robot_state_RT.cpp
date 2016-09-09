@@ -18,6 +18,8 @@
 
 #include "ur_modern_driver/robot_state_RT.h"
 
+#include <iostream>
+
 RobotStateRT::RobotStateRT(std::condition_variable& msg_cond) {
 	version_ = 0.0;
 	time_ = 0.0;

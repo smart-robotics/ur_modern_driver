@@ -685,8 +685,10 @@ private:
             if (robot_.sec_interface_->robot_state_->getVersion() >= 3.2)
             {
                 int program_state = (int)robot_.rt_interface_->robot_state_->getProgramState();
-
-                ROS_INFO("program_state: %d", program_state);
+                std_msgs::Int64 msg;
+                msg.data = program_state;
+//                ROS_INFO("program_state: %d", program_state);
+                program_state_pub.publish(msg);
             }
 
 			robot_.rt_interface_->robot_state_->setDataPublished();
