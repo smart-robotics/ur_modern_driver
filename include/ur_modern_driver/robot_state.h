@@ -148,11 +148,19 @@ struct robot_mode_data {
 	double speedScaling;
 };
 
+struct tool_data {
+    char analogInputRange2;
+    char analogInputRange3;
+    double analogInput2;
+    double analogInput3;
+};
+
 class RobotState {
 private:
 	version_message version_msg_;
 	masterboard_data mb_data_;
 	robot_mode_data robot_mode_;
+    tool_data tool_data_;
 
 	std::recursive_mutex val_lock_; // Locks the variables while unpack parses data;
 
@@ -190,6 +198,10 @@ public:
 	int getEuromapOutputBits();
 	float getEuromapVoltage();
 	float getEuromapCurrent();
+    char getAnalogInputRange2();
+    char getAnalogInputRange3();
+    double getAnalogInput2();
+    double getAnalogInput3();
 
 	bool isRobotConnected();
 	bool isRealRobotEnabled();
@@ -213,6 +225,7 @@ public:
 	void unpackRobotState(uint8_t * buf, unsigned int offset, uint32_t len);
 	void unpackRobotStateMasterboard(uint8_t * buf, unsigned int offset);
 	void unpackRobotMode(uint8_t * buf, unsigned int offset);
+    void unpackRobotStateToolData(uint8_t * buf, unsigned int offset);
 };
 
 #endif /* ROBOT_STATE_H_ */

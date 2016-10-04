@@ -687,7 +687,7 @@ private:
                 int program_state = (int)robot_.rt_interface_->robot_state_->getProgramState();
                 std_msgs::Int64 msg;
                 msg.data = program_state;
-//                ROS_INFO("program_state: %d", program_state);
+//                ROS_INFO("UR program_state: %d", program_state);
                 program_state_pub.publish(msg);
             }
 
@@ -729,6 +729,13 @@ private:
 			ana.pin = 1;
 			ana.state = robot_.sec_interface_->robot_state_->getAnalogInput1();
 			io_msg.analog_in_states.push_back(ana);
+
+            ana.pin = 2;
+            ana.state = robot_.sec_interface_->robot_state_->getAnalogInput2();
+            io_msg.analog_in_states.push_back(ana);
+            ana.pin = 3;
+            ana.state = robot_.sec_interface_->robot_state_->getAnalogInput3();
+            io_msg.analog_in_states.push_back(ana);
 
 			ana.pin = 0;
 			ana.state = robot_.sec_interface_->robot_state_->getAnalogOutput0();
