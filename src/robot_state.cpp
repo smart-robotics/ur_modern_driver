@@ -110,6 +110,11 @@ void RobotState::unpackRobotState(uint8_t * buf, unsigned int offset,
 			RobotState::unpackRobotStateMasterboard(buf, offset + 5);
 			val_lock_.unlock();
 			break;
+        case packageType::TOOL_DATA:
+            val_lock_.lock();
+            RobotState::unpackRobotStateToolData(buf, offset + 5);
+            val_lock_.unlock();
+            break;
 		default:
 			break;
 		}
