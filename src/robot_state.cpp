@@ -110,6 +110,11 @@ void RobotState::unpackRobotState(uint8_t * buf, unsigned int offset,
 			RobotState::unpackRobotStateMasterboard(buf, offset + 5);
 			val_lock_.unlock();
 			break;
+        case packageType::TOOL_DATA:
+            val_lock_.lock();
+            RobotState::unpackRobotStateToolData(buf, offset + 5);
+            val_lock_.unlock();
+            break;
 		default:
 			break;
 		}
@@ -312,6 +317,24 @@ void RobotState::unpackRobotStateMasterboard(uint8_t * buf,
 	}
 }
 
+void RobotState::unpackRobotStateToolData(uint8_t * buf, unsigned int offset)
+{
+    memcpy(&tool_data_.analogInputRange2, &buf[offset],
+            sizeof(tool_data_.analogInputRange2));
+    offset += sizeof(tool_data_.analogInputRange2);
+    memcpy(&tool_data_.analogInputRange3, &buf[offset],
+            sizeof(tool_data_.analogInputRange3));
+    offset += sizeof(tool_data_.analogInputRange3);
+
+    uint64_t temp;
+    memcpy(&temp, &buf[offset], sizeof(temp));
+    offset += sizeof(temp);
+    tool_data_.analogInput2 = RobotState::ntohd(temp);
+    memcpy(&temp, &buf[offset], sizeof(temp));
+    offset += sizeof(temp);
+    tool_data_.analogInput3 = RobotState::ntohd(temp);
+}
+
 double RobotState::getVersion() {
 	double ver;
 	val_lock_.lock();
@@ -344,10 +367,15 @@ double RobotState::getAnalogInput1() {
 }
 double RobotState::getAnalogOutput0() {
 	return mb_data_.analogOutput0;
-
 }
 double RobotState::getAnalogOutput1() {
 	return mb_data_.analogOutput1;
+}
+double RobotState::getAnalogInput2() {
+    return tool_data_.analogInput2;
+}
+double RobotState::getAnalogInput3() {
+    return tool_data_.analogInput3;
 }
 bool RobotState::isRobotConnected() {
 	return robot_mode_.isRobotConnected;
