@@ -144,6 +144,7 @@ void UrRealtimeCommunication::run() {
 				close(sockfd_);
 			}
 		}
+        keepalive_ = false;
 		if (keepalive_) {
 			//reconnect
 			print_warning("Realtime port: No connection. Is controller crashed? Will try to reconnect in 10 seconds...");
