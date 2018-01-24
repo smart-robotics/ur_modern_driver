@@ -52,6 +52,9 @@
 #include <controller_manager/controller_manager.h>
 #include <realtime_tools/realtime_publisher.h>
 
+/// Ur Dashboard
+#include "control_panel_ur/UrDashboard.h"
+
 /// TF
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
@@ -853,6 +856,7 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "ur_driver");
 	ros::NodeHandle nh;
+
 	if (ros::param::get("use_sim_time", use_sim_time)) {
 		print_warning("use_sim_time is set!!");
 	}
@@ -875,6 +879,18 @@ int main(int argc, char **argv) {
 		}
 	} else
 		reverse_port = 50001;
+
+    // Wait for the dashboard to be online before starting the driver
+    {
+        sr::UrDashboard ur_dashboard;
+        ur_dashboard.setHostname(host);
+        while (ros::ok() && !ur_dashboard.initSocketServer())
+        {
+            double timeout = 5.0;
+            ROS_WARN("Could not connect to dashboard, retrying in %.2f seconds", timeout);
+            ros::Duration(timeout).sleep();
+        }
+    }
 
 	RosWrapper interface(host, reverse_port);
 
