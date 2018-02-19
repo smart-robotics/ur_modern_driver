@@ -360,7 +360,8 @@ void RobotStateRT::unpack(uint8_t * buf) {
         }
 
 	if (!len_good) {
-		printf("Wrong length of message on RT interface: %i\n", len);
+		if (len != 0 && std::abs(len) <= 100000) // ignoring empty and often repeating wrong messages.
+			printf("Wrong length of message on RT interface: %i\n", len);
 		val_lock_.unlock();
 		return;
 	}
