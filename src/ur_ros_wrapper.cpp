@@ -90,13 +90,13 @@ protected:
 	// * The has_goal_ variable is protected by the goal_mutex_, as it is
 	//   accessed by trajThread() and the callbacks.
 
-	std::mutex goal_mutex_;
+	//std::mutex goal_mutex_;
 	bool has_goal_;
 	std::thread traj_thread_;
 	control_msgs::FollowJointTrajectoryFeedback feedback_;
 	control_msgs::FollowJointTrajectoryResult result_;
 
-	std::mutex as_mutex_;
+	//std::mutex as_mutex_;
 
 public:
 	RosWrapper(std::string host, int reverse_port) :
@@ -247,7 +247,7 @@ private:
 
 		if (finished)
 		{
-			std::unique_lock<std::mutex> lock(goal_mutex_);
+			//std::unique_lock<std::mutex> lock(goal_mutex_);
 			result_.error_code = result_.SUCCESSFUL;
 			goal_handle_.setSucceeded(result_);
 			has_goal_ = false;
@@ -258,7 +258,7 @@ private:
 			actionlib::ServerGoalHandle<
 					control_msgs::FollowJointTrajectoryAction> gh) {
 
-		std::unique_lock<std::mutex> asLock(as_mutex_);
+		//std::unique_lock<std::mutex> asLock(as_mutex_);
 
 		std::string buf;
 		print_info("on_goal");
@@ -309,7 +309,7 @@ private:
 				*gh.getGoal(); //make a copy that we can modify
 
 		{
-			std::unique_lock<std::mutex> lock(goal_mutex_);
+			//std::unique_lock<std::mutex> lock(goal_mutex_);
 			if (has_goal_) {
 				print_warning(
 						"Received new goal while still executing previous trajectory. Canceling previous trajectory");
@@ -326,7 +326,7 @@ private:
 		if(traj_thread_.joinable())
 			traj_thread_.join();
 
-		std::unique_lock<std::mutex> lock(goal_mutex_);
+		//std::unique_lock<std::mutex> lock(goal_mutex_);
 
 		goal_handle_ = gh;
 		if (!validateJointNames()) {
@@ -417,8 +417,8 @@ private:
 					control_msgs::FollowJointTrajectoryAction> gh) {
 		// set the action state to preempted
 
-		std::unique_lock<std::mutex> asLock(as_mutex_);
-		std::unique_lock<std::mutex> lock(goal_mutex_);
+		//std::unique_lock<std::mutex> asLock(as_mutex_);
+		//std::unique_lock<std::mutex> lock(goal_mutex_);
 
 		print_info("on_cancel");
 		if (has_goal_) {
