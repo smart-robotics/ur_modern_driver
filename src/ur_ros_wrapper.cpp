@@ -52,9 +52,6 @@
 #include <controller_manager/controller_manager.h>
 #include <realtime_tools/realtime_publisher.h>
 
-/// Ur Dashboard
-#include "control_panel_ur/UrDashboard.h"
-
 /// TF
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
