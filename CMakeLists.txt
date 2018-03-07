@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   trajectory_msgs
   ur_msgs
   tf
-  control_panel_ur
 )
 
 ## System dependencies are found with CMake's conventions

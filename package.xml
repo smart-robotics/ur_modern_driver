@@ -52,7 +52,6 @@
   <build_depend>ur_msgs</build_depend>
   <build_depend>tf</build_depend>
   <build_depend>realtime_tools</build_depend>
-  <build_depend>control_panel_ur</build_depend>
   <run_depend>hardware_interface</run_depend>
   <run_depend>controller_manager</run_depend>
   <run_depend>actionlib</run_depend>
@@ -66,7 +65,6 @@
   <run_depend>ur_description</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>realtime_tools</run_depend>
-  <run_depend>control_panel_ur</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
