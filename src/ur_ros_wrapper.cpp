@@ -916,16 +916,11 @@ int main(int argc, char **argv) {
 	} else
 		reverse_port = 50001;
 
-    // Wait for the dashboard to be online before starting the driver
-    {
-        sr::UrDashboard ur_dashboard;
-        ur_dashboard.setHostname(host);
-        while (ros::ok() && !ur_dashboard.initSocketServer())
-        {
-            double timeout = 5.0;
-            ROS_WARN("Could not connect to dashboard, retrying in %.2f seconds", timeout);
-            ros::Duration(timeout).sleep();
-        }
+    // Start delay for CI, sleep x seconds before connecting to the simulated robot
+    double start_delay = 0;
+    if (ros::param::get("~start_delay", start_delay)) {
+        ROS_INFO("Start delay of %.2f seconds, sleeping ....", start_delay);
+        ros::Duration(start_delay).sleep();
     }
 
 	RosWrapper interface(host, reverse_port);
