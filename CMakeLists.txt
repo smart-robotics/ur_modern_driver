@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   trajectory_msgs
   ur_msgs
   tf
-  control_panel_ur
 )
 
 ## System dependencies are found with CMake's conventions
@@ -111,7 +110,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES ur_modern_driver
-  CATKIN_DEPENDS hardware_interface controller_manager actionlib control_msgs geometry_msgs roscpp sensor_msgs trajectory_msgs ur_msgs control_panel_ur
+  CATKIN_DEPENDS hardware_interface controller_manager actionlib control_msgs geometry_msgs roscpp sensor_msgs trajectory_msgs ur_msgs
   DEPENDS ur_hardware_interface
 )
 
