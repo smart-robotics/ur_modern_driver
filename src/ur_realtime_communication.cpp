@@ -188,7 +188,6 @@ void UrRealtimeCommunication::run() {
 			}
 		}
 	}
-	setSpeed(0., 0., 0., 0., 0., 0.);
 	close(sockfd_);
 }
 
