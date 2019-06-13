@@ -185,7 +185,7 @@ bool UrDriver::uploadProg() {
 	cmd_str += "\t\t\t\tsync()\n";
 	cmd_str += "\t\t\telif state == SERVO_RUNNING:\n";
 
-	if (sec_interface_->robot_state_->getVersion() >= 3.1)
+	if (sec_interface_->robot_state_->getMajorVersion() == 3 && sec_interface_->robot_state_->getMinorVersion() >= 1)
 		sprintf(buf, "\t\t\t\tservoj(q, t=%.4f, lookahead_time=%.4f, gain=%.0f)\n",
 				servoj_time_, servoj_lookahead_time_, servoj_gain_);
 	else
@@ -252,8 +252,8 @@ void UrDriver::closeServo(std::vector<double> positions) {
 bool UrDriver::start() {
 	if (!sec_interface_->start())
 		return false;
-	firmware_version_ = sec_interface_->robot_state_->getVersion();
-	rt_interface_->robot_state_->setVersion(firmware_version_);
+	rt_interface_->robot_state_->setMajorVersion(sec_interface_->robot_state_->getMajorVersion());
+	rt_interface_->robot_state_->setMinorVersion(sec_interface_->robot_state_->getMinorVersion());
 	if (!rt_interface_->start())
 		return false;
 	ip_addr_ = rt_interface_->getLocalIp();

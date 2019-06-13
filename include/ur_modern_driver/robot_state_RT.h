@@ -29,7 +29,8 @@
 
 class RobotStateRT {
 private:
-	double version_; //protocol version
+	int major_version_; //protocol major version
+	int minor_version_; //protocol minor version
 
 	double time_; //Time elapsed since the controller was started
 	std::vector<double> q_target_; //Target joint positions
@@ -76,7 +77,8 @@ private:
 public:
 	RobotStateRT(std::condition_variable& msg_cond);
 	~RobotStateRT();
-	double getVersion();
+	int getMajorVersion();
+	int getMinorVersion();
 	double getTime();
 	std::vector<double> getQTarget();
 	std::vector<double> getQdTarget();
@@ -107,7 +109,8 @@ public:
 	double getIRobot();
     double getProgramState();
 
-	void setVersion(double ver);
+	void setMajorVersion(int ver);
+	void setMinorVersion(int ver);
 
 	void setDataPublished();
 	bool getDataPublished();
