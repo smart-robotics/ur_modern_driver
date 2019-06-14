@@ -356,7 +356,7 @@ void RobotStateRT::unpack(uint8_t * buf) {
 
 	//Check the correct message length is received
 	bool len_good = false;
-	if (major_version_ == 0)
+	if (major_version_ == 1)
 	{
         if (minor_version_ >= 6 && minor_version_ < 7) { //v1.6
                 if (len == 756)
