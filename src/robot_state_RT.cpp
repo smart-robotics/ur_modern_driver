@@ -21,7 +21,8 @@
 #include <iostream>
 
 RobotStateRT::RobotStateRT(std::condition_variable& msg_cond) {
-	version_ = 0.0;
+	major_version_ = 0;
+	minor_version_ = 0;
 	time_ = 0.0;
 	q_target_.assign(6, 0.0);
 	qd_target_.assign(6, 0.0);
@@ -102,19 +103,35 @@ std::vector<bool> RobotStateRT::unpackDigitalBits(int64_t data) {
 	return ret;
 }
 
-void RobotStateRT::setVersion(double ver) {
+void RobotStateRT::setMajorVersion(int ver) {
 	val_lock_.lock();
-	version_ = ver;
+	major_version_ = ver;
+	val_lock_.unlock();
+
+}
+
+void RobotStateRT::setMinorVersion(int ver) {
+	val_lock_.lock();
+	minor_version_ = ver;
 	val_lock_.unlock();
 }
 
-double RobotStateRT::getVersion() {
-	double ret;
+int RobotStateRT::getMajorVersion() {
+	int ret;
 	val_lock_.lock();
-	ret = version_;
+	ret = major_version_;
 	val_lock_.unlock();
 	return ret;
 }
+
+int RobotStateRT::getMinorVersion() {
+	int ret;
+	val_lock_.lock();
+	ret = minor_version_;
+	val_lock_.unlock();
+	return ret;
+}
+
 double RobotStateRT::getTime() {
 	double ret;
 	val_lock_.lock();
@@ -338,26 +355,37 @@ void RobotStateRT::unpack(uint8_t * buf) {
 	len = ntohl(len);
 
 	//Check the correct message length is received
-        bool len_good = false;
-        if (version_ >= 1.6 && version_ < 1.7) { //v1.6
+	bool len_good = false;
+	if (major_version_ == 1)
+	{
+        if (minor_version_ >= 6 && minor_version_ < 7) { //v1.6
                 if (len == 756)
                         len_good = true;
-        } else if (version_ >= 1.7 && version_ < 1.8) { //v1.7
+        } else if (minor_version_ >= 7 && minor_version_ < 8) { //v1.7
                 if (len == 764)
                         len_good = true;
-        } else if (version_ >= 1.8 && version_ < 1.9) { //v1.8
+        } else if (minor_version_ >= 8 && minor_version_ < 9) { //v1.8
                 if (len == 812)
                         len_good = true;
-        } else if (version_ >= 3.0 && version_ < 3.2) { //v3.0 & v3.1
+        }
+	}
+	else if (major_version_ == 3)
+	{
+        if (minor_version_ >= 0 && minor_version_ < 2) { //v3.0 & v3.1
                 if (len == 1044)
                         len_good = true;
-        } else if (version_ >= 3.2 && version_ < 3.5) { //v3.2 ~ v3.4
+        } else if (minor_version_ >= 2 && minor_version_ < 5) { //v3.2 ~ v3.4
                 if (len == 1060)
                         len_good = true;
-        } else if (version_ >= 3.5 && version_ < 3.8) { //v3.5 ~ v3.7
+        } else if (minor_version_ >= 5 && minor_version_ < 10) { //v3.5 ~ v3.9
                 if (len == 1108)
                         len_good = true;
         }
+        else if (minor_version_ >= 10 && minor_version_ < 11) { //v3.10
+                if (len == 1116)
+                        len_good = true;
+        }
+	}
 
 	if (!len_good) {
 		if (len != 0 && std::abs(len) <= 100000) // ignoring empty and often repeating wrong messages.
@@ -385,8 +413,8 @@ void RobotStateRT::unpack(uint8_t * buf) {
 	offset += sizeof(double) * 6;
 	i_actual_ = unpackVector(buf, offset, 6);
 	offset += sizeof(double) * 6;
-	if (version_ <= 1.9) {
-		if (version_ > 1.6)
+	if (major_version_ == 1 && minor_version_ <= 9) {
+		if (minor_version_ > 6)
 			tool_accelerometer_values_ = unpackVector(buf, offset, 3);
 		offset += sizeof(double) * (3 + 15);
 		tcp_force_ = unpackVector(buf, offset, 6);
@@ -416,16 +444,16 @@ void RobotStateRT::unpack(uint8_t * buf) {
 	offset += sizeof(double) * 6;
 	memcpy(&unpack_to, &buf[offset], sizeof(unpack_to));
 	controller_timer_ = ntohd(unpack_to);
-	if (version_ > 1.6) {
+	if ((major_version_ == 1 && minor_version_ > 6) || major_version_ > 1) { // 1.6 or later
 		offset += sizeof(double) * 2;
 		memcpy(&unpack_to, &buf[offset], sizeof(unpack_to));
 		robot_mode_ = ntohd(unpack_to);
-		if (version_ > 1.7) {
+		if (minor_version_ > 7) {
 			offset += sizeof(double);
 			joint_modes_ = unpackVector(buf, offset, 6);
 		}
 	}
-	if (version_ > 1.8) {
+	if ((major_version_ == 1 && minor_version_ > 8) || major_version_ > 1) { // 1.8 or later
 		offset += sizeof(double) * 6;
 		memcpy(&unpack_to, &buf[offset], sizeof(unpack_to));
 		safety_mode_ = ntohd(unpack_to);
@@ -453,7 +481,7 @@ void RobotStateRT::unpack(uint8_t * buf) {
 		offset += sizeof(double);
 		v_actual_ = unpackVector(buf, offset, 6);
     }
-    if (version_ >= 3.2) {
+    if (major_version_ == 3 && minor_version_ >= 2) { // 3.2 and later
         offset += sizeof(double) * 6;
         memcpy(&digital_ouput_bits, &buf[offset], sizeof(digital_ouput_bits));
         digital_output_bits_ = unpackDigitalBits(ntohd(digital_ouput_bits));

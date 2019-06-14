@@ -775,7 +775,8 @@ private:
                 pin++;
             }
             // From version 3.2, realtime interface has digital output pins
-            if (robot_.sec_interface_->robot_state_->getVersion() >= 3.2)
+            if (robot_.sec_interface_->robot_state_->getMajorVersion() == 3 &&
+                robot_.sec_interface_->robot_state_->getMinorVersion() >= 2)
             {
                 std::vector<bool> dout = robot_.rt_interface_->robot_state_->getDigitalOutputBits();
                 pin = 0;
@@ -791,7 +792,9 @@ private:
             io_pub_rt.publish(io_msg_rt);
 
             // From version 3.2, realtime interface has programState
-            if (robot_.sec_interface_->robot_state_->getVersion() >= 3.2)
+//            printf("Major version: %d, minor version: %d\n", robot_.sec_interface_->robot_state_->getMajorVersion(), robot_.sec_interface_->robot_state_->getMinorVersion());
+            if (robot_.sec_interface_->robot_state_->getMajorVersion() == 3 &&
+                robot_.sec_interface_->robot_state_->getMinorVersion() >= 2)
             {
                 int program_state = (int)robot_.rt_interface_->robot_state_->getProgramState();
                 std_msgs::Int64 msg;
@@ -817,7 +820,7 @@ private:
 				msg_cond_.wait(locker);
 			}
 			int i_max = 10;
-			if (robot_.sec_interface_->robot_state_->getVersion() > 3.0)
+			if (robot_.sec_interface_->robot_state_->getMajorVersion() >= 3)
 				i_max = 18; // From version 3.0, there are up to 18 inputs and outputs
 			for (unsigned int i = 0; i < i_max; i++) {
 				ur_msgs::Digital digi;

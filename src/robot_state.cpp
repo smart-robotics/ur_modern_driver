@@ -201,7 +201,7 @@ void RobotState::unpackRobotMode(uint8_t * buf, unsigned int offset) {
 	memcpy(&robot_mode_.robotMode, &buf[offset], sizeof(robot_mode_.robotMode));
 	offset += sizeof(robot_mode_.robotMode);
 	uint64_t temp;
-	if (RobotState::getVersion() > 2.) {
+	if (RobotState::getMajorVersion() >= 2) {
 		memcpy(&robot_mode_.controlMode, &buf[offset],
 				sizeof(robot_mode_.controlMode));
 		offset += sizeof(robot_mode_.controlMode);
@@ -216,7 +216,7 @@ void RobotState::unpackRobotMode(uint8_t * buf, unsigned int offset) {
 
 void RobotState::unpackRobotStateMasterboard(uint8_t * buf,
 		unsigned int offset) {
-	if (RobotState::getVersion() < 3.0) {
+	if (RobotState::getMajorVersion() < 3) {
 		int16_t digital_input_bits, digital_output_bits;
 		memcpy(&digital_input_bits, &buf[offset], sizeof(digital_input_bits));
 		offset += sizeof(digital_input_bits);
@@ -295,7 +295,7 @@ void RobotState::unpackRobotStateMasterboard(uint8_t * buf,
 				sizeof(mb_data_.euromapOutputBits));
 		offset += sizeof(mb_data_.euromapOutputBits);
 		mb_data_.euromapOutputBits = ntohl(mb_data_.euromapOutputBits);
-		if (RobotState::getVersion() < 3.0) {
+		if (RobotState::getMajorVersion() < 3) {
 			int16_t euromap_voltage, euromap_current;
 			memcpy(&euromap_voltage, &buf[offset], sizeof(euromap_voltage));
 			offset += sizeof(euromap_voltage);
@@ -335,14 +335,20 @@ void RobotState::unpackRobotStateToolData(uint8_t * buf, unsigned int offset)
     tool_data_.analogInput3 = RobotState::ntohd(temp);
 }
 
-double RobotState::getVersion() {
-	double ver;
+int RobotState::getMajorVersion() {
+	int ver;
 	val_lock_.lock();
-	ver = version_msg_.major_version + 0.1 * version_msg_.minor_version
-			+ .0000001 * version_msg_.svn_revision;
+	ver = version_msg_.major_version;
 	val_lock_.unlock();
 	return ver;
+}
 
+int RobotState::getMinorVersion() {
+	int ver;
+	val_lock_.lock();
+	ver = version_msg_.minor_version;
+	val_lock_.unlock();
+	return ver;
 }
 
 void RobotState::finishedReading() {

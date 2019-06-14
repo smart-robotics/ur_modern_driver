@@ -30,7 +30,7 @@ UrDriver::UrDriver(std::condition_variable& rt_msg_cond,
 	struct sockaddr_in serv_addr;
 	int n, flag;
 
-	firmware_version_ = 0;
+	robot_major_version_ = 0;
 	reverse_connected_ = false;
 	executing_traj_ = false;
 	rt_interface_ = new UrRealtimeCommunication(rt_msg_cond, host,
@@ -185,7 +185,7 @@ bool UrDriver::uploadProg() {
 	cmd_str += "\t\t\t\tsync()\n";
 	cmd_str += "\t\t\telif state == SERVO_RUNNING:\n";
 
-	if (sec_interface_->robot_state_->getVersion() >= 3.1)
+	if (sec_interface_->robot_state_->getMajorVersion() == 3 && sec_interface_->robot_state_->getMinorVersion() >= 1)
 		sprintf(buf, "\t\t\t\tservoj(q, t=%.4f, lookahead_time=%.4f, gain=%.0f)\n",
 				servoj_time_, servoj_lookahead_time_, servoj_gain_);
 	else
@@ -252,8 +252,9 @@ void UrDriver::closeServo(std::vector<double> positions) {
 bool UrDriver::start() {
 	if (!sec_interface_->start())
 		return false;
-	firmware_version_ = sec_interface_->robot_state_->getVersion();
-	rt_interface_->robot_state_->setVersion(firmware_version_);
+    robot_major_version_ = sec_interface_->robot_state_->getMajorVersion();
+	rt_interface_->robot_state_->setMajorVersion(robot_major_version_);
+	rt_interface_->robot_state_->setMinorVersion(sec_interface_->robot_state_->getMinorVersion());
 	if (!rt_interface_->start())
 		return false;
 	ip_addr_ = rt_interface_->getLocalIp();
@@ -301,7 +302,7 @@ void UrDriver::setFlag(unsigned int n, bool b) {
 }
 void UrDriver::setDigitalOut(unsigned int n, bool b) {
 	char buf[256];
-	if (firmware_version_ < 2) {
+	if (robot_major_version_ < 2) {
 		sprintf(buf, "sec setOut():\n\tset_digital_out(%d, %s)\nend\n", n,
 				b ? "True" : "False");
     } else if (n > 15) {
@@ -311,7 +312,6 @@ void UrDriver::setDigitalOut(unsigned int n, bool b) {
 	} else if (n > 7) {
         sprintf(buf, "sec setOut():\n\tset_configurable_digital_out(%d, %s)\nend\n",
 				n - 8, b ? "True" : "False");
-
 	} else {
 		sprintf(buf, "sec setOut():\n\tset_standard_digital_out(%d, %s)\nend\n",
 				n, b ? "True" : "False");
@@ -323,7 +323,7 @@ void UrDriver::setDigitalOut(unsigned int n, bool b) {
 }
 void UrDriver::setAnalogOut(unsigned int n, double f) {
 	char buf[256];
-	if (firmware_version_ < 2) {
+	if (robot_major_version_ < 2) {
 		sprintf(buf, "sec setOut():\n\tset_analog_out(%d, %1.4f)\nend\n", n, f);
 	} else {
 		sprintf(buf, "sec setOut():\n\tset_standard_analog_out(%d, %1.4f)\nend\n", n, f);

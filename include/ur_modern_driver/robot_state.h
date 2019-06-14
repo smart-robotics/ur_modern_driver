@@ -173,7 +173,8 @@ private:
 public:
 	RobotState(std::condition_variable& msg_cond);
 	~RobotState();
-	double getVersion();
+	int getMajorVersion();
+	int getMinorVersion();
 	double getTime();
 	std::vector<double> getQTarget();
 	int getDigitalInputBits();
