@@ -49,7 +49,7 @@ private:
 	bool reverse_connected_;
 	double servoj_time_;
 	bool executing_traj_;
-	double firmware_version_;
+	int robot_major_version_;
 	double servoj_lookahead_time_;
 	double servoj_gain_;
 public:
