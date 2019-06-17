@@ -448,7 +448,7 @@ void RobotStateRT::unpack(uint8_t * buf) {
 		offset += sizeof(double) * 2;
 		memcpy(&unpack_to, &buf[offset], sizeof(unpack_to));
 		robot_mode_ = ntohd(unpack_to);
-		if (minor_version_ > 7) {
+		if (major_version_ == 1 && minor_version_ > 7 || major_version_ > 1) {
 			offset += sizeof(double);
 			joint_modes_ = unpackVector(buf, offset, 6);
 		}
