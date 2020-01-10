@@ -381,7 +381,7 @@ void RobotStateRT::unpack(uint8_t * buf) {
                 if (len == 1108)
                         len_good = true;
         }
-        else if (minor_version_ >= 10 && minor_version_ < 11) { //v3.10
+        else if (minor_version_ >= 10 && minor_version_ < 13) { //v3.10 ~ v3.12
                 if (len == 1116)
                         len_good = true;
         }
